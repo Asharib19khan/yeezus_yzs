@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { saveLogin } from '@/app/actions';
 
 export default function EmailGate({ onClose }: { onClose?: () => void }) {
   const [isVisible, setIsVisible] = useState(true);
@@ -32,25 +31,24 @@ export default function EmailGate({ onClose }: { onClose?: () => void }) {
     setIsSubmitting(true);
     
     try {
-      // Save to Supabase
-      const result = await saveLogin(email);
-      
+      const res = await fetch('/api/save-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const result = await res.json();
       if (!result.success) {
         console.error('Failed to save email:', result.error);
-        // We still proceed to the site for UX reasons, but log the error
       }
-      
-      // Brief delay for premium feel
-      setTimeout(() => {
-        setIsVisible(false);
-        if (onClose) {
-          setTimeout(onClose, 800); 
-        }
-      }, 400);
     } catch (err) {
-      console.error('Error submitting email:', err);
-      setIsSubmitting(false);
+      console.error('Network error:', err);
     }
+    
+    // Always proceed to site regardless of DB outcome
+    setTimeout(() => {
+      setIsVisible(false);
+      if (onClose) setTimeout(onClose, 800);
+    }, 400);
   };
 
   return (
