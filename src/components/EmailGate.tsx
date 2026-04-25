@@ -2,6 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function EmailGate({ onClose }: { onClose?: () => void }) {
   const [isVisible, setIsVisible] = useState(true);
@@ -9,7 +15,6 @@ export default function EmailGate({ onClose }: { onClose?: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Lock scroll when gate is visible
     if (isVisible) {
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
@@ -17,7 +22,6 @@ export default function EmailGate({ onClose }: { onClose?: () => void }) {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
     }
-
     return () => {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
@@ -27,23 +31,16 @@ export default function EmailGate({ onClose }: { onClose?: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || isSubmitting) return;
-    
     setIsSubmitting(true);
-    
-    try {
-      const res = await fetch('/api/save-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim() }),
-      });
-      const result = await res.json();
-      if (!result.success) {
-        console.error('Failed to save email:', result.error);
-      }
-    } catch (err) {
-      console.error('Network error:', err);
+
+    const { error } = await supabase
+      .from('logins')
+      .insert({ email: email.trim() });
+
+    if (error) {
+      console.error('Supabase insert error:', error.message);
     }
-    
+
     // Always proceed to site regardless of DB outcome
     setTimeout(() => {
       setIsVisible(false);
