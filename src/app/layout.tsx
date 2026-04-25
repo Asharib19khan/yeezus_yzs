@@ -15,6 +15,10 @@ const syne = Syne({
 export const metadata: Metadata = {
   title: "YEEZUS | Elite Software Architecture",
   description: "You build the future; we make it permanent. The standard for your success has been reset.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
