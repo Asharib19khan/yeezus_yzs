@@ -12,58 +12,7 @@ import LeatherGasShader from './LeatherGasShader';
 
 // ─────────────────────────────────────────────
 // DATA
-// ─────────────────────────────────────────────
-const SERVICES = [
-  {
-    id: 1,
-    title: '[ AI & MACHINE LEARNING ]',
-    desc: 'RAG Systems, AI/ML Infrastructure, Custom Model Training.',
-    index: '01',
-    tag: 'INTELLIGENCE',
-  },
-  {
-    id: 2,
-    title: '[ SYSTEMIC BACKEND & DB ]',
-    desc: 'Python, C++, C#, SQL, NoSQL, MariaDB, and Access Architectures.',
-    index: '02',
-    tag: 'ARCHITECTURE',
-  },
-  {
-    id: 3,
-    title: '[ FULL-STACK & WEB ENG ]',
-    desc: 'React, JavaScript, HTML5/CSS3, Landing Pages, and Responsive Web Design.',
-    index: '03',
-    tag: 'ENGINEERING',
-  },
-  {
-    id: 4,
-    title: '[ NATIVE APP ECOSYSTEMS ]',
-    desc: 'Flutter, Android App Development, and High-Performance Mobile UI.',
-    index: '04',
-    tag: 'DEPLOYMENT',
-  },
-  {
-    id: 5,
-    title: '[ ELITE SECURITY & DEBUG ]',
-    desc: 'Ethical Hacking, App Debugging, and System Fortification.',
-    index: '05',
-    tag: 'SECURITY',
-  },
-  {
-    id: 6,
-    title: '[ 3D & BRUTALIST UI ]',
-    desc: '3D Figure Designing, Website Customization, and UI Implementation.',
-    index: '06',
-    tag: 'DESIGN',
-  },
-  {
-    id: 7,
-    title: '[ HARDWARE & IOT LOGIC ]',
-    desc: 'Arduino-Based Projects and Embedded System Engineering.',
-    index: '07',
-    tag: 'HARDWARE',
-  },
-];
+import { SERVICES } from '@/data/services';
 
 // ─────────────────────────────────────────────
 // CARD & CANVAS DIMENSIONS
@@ -105,10 +54,12 @@ function ServiceCard({
   service,
   placement,
   onOrderClick,
+  highlighted,
 }: {
   service: (typeof SERVICES)[0];
   placement: { x: number; y: number };
   onOrderClick: () => void;
+  highlighted?: boolean;
 }) {
   // Discriminate click vs drag: if pointer moves > threshold before
   // pointerup it counts as a drag and the click is suppressed.
@@ -162,8 +113,14 @@ function ServiceCard({
     >
       {/* Card shell */}
       <div
-        className="relative flex flex-col justify-between bg-[#090909] border border-white/5 rounded-2xl shadow-2xl shadow-black/80 overflow-hidden transition-all duration-500 group-hover:border-white/30"
-        style={{ minHeight: CARD_H }}
+        className="relative flex flex-col justify-between bg-[#090909] border rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 group-hover:border-white/30"
+        style={{
+          minHeight: CARD_H,
+          borderColor: highlighted ? 'rgba(255,0,136,0.7)' : 'rgba(255,255,255,0.05)',
+          boxShadow: highlighted
+            ? '0 0 40px 8px rgba(255,0,136,0.35), 0 0 80px 16px rgba(255,0,136,0.15)'
+            : undefined,
+        }}
       >
         {/* Top magenta accent bar — animates width on hover */}
         <div className="absolute top-0 left-0 h-[2px] w-0 bg-brand-magenta group-hover:w-full transition-all duration-500 ease-out" />
@@ -188,8 +145,8 @@ function ServiceCard({
             {service.tag}
           </span>
 
-          {/* Title */}
-          <h3 className="font-heading font-black text-[17px] text-white/90 tracking-widest uppercase leading-tight mb-4 group-hover:text-white transition-colors duration-300">
+          {/* Title - expensive and modern typography */}
+          <h3 className="font-sans font-light text-2xl text-white/95 tracking-wide leading-tight mb-4 group-hover:text-white transition-colors duration-300">
             {service.title}
           </h3>
 
@@ -197,20 +154,20 @@ function ServiceCard({
           <div className="w-8 h-px bg-white/15 mb-4 group-hover:w-16 group-hover:bg-brand-magenta/50 transition-all duration-400" />
 
           {/* Description */}
-          <p className="text-white/40 font-sans text-[13px] leading-relaxed group-hover:text-white/60 transition-colors duration-300">
+          <p className="text-white/40 font-sans text-sm font-light leading-relaxed group-hover:text-white/70 transition-colors duration-300">
             {service.desc}
           </p>
         </div>
 
-        {/* CTA */}
+        {/* CTA - no brackets, modern */}
         <div className="px-8 pb-8 pt-4">
           <button
             onClick={handleClick}
-            className="w-full py-[11px] border border-white/15 text-white/35 font-heading font-bold text-[11px] tracking-[0.3em] uppercase
-                       hover:bg-white hover:text-brand-void hover:border-white hover:tracking-[0.35em]
-                       transition-all duration-300 cursor-pointer"
+            className="w-full py-3 border border-white/15 text-white/50 font-sans font-medium text-[13px] tracking-wide
+                       hover:bg-white hover:text-brand-void hover:border-white
+                       transition-all duration-300 cursor-pointer rounded-full"
           >
-            [ PLACE YOUR ORDER ]
+            Place your order
           </button>
         </div>
 
@@ -227,6 +184,7 @@ function ServiceCard({
 export default function CoreServices({ onOrderClick }: CoreServicesProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
+  const [highlightedId, setHighlightedId] = useState<number | null>(null);
 
   // Raw motion values (managed natively by framer-motion drag)
   const canvasX = useMotionValue(0);
@@ -241,19 +199,66 @@ export default function CoreServices({ onOrderClick }: CoreServicesProps) {
     }
   }, [canvasX, canvasY]);
 
+  // Listen for search navigation events
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { id, section } = (e as CustomEvent).detail;
+      if (section !== 'core') return;
+
+      // Find card index (SERVICES is 0-indexed, id is 1-based)
+      const cardIdx = SERVICES.findIndex((s) => s.id === id);
+      if (cardIdx === -1) return;
+
+      const placement = CARD_PLACEMENTS[cardIdx];
+      if (!placement) return;
+
+      // Scroll section into view
+      const section_el = document.getElementById('services');
+      if (section_el) section_el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Animate canvas so the card is centered in the viewport aperture
+      setTimeout(() => {
+        if (!containerRef.current) return;
+        const cw = containerRef.current.clientWidth;
+        const ch = containerRef.current.clientHeight;
+        // Target offset: center of aperture minus card's canvas position minus half card width
+        const targetX = cw / 2 - (placement.x + CARD_W / 2);
+        const targetY = ch / 2 - (placement.y + CARD_H / 2);
+        canvasX.set(targetX);
+        canvasY.set(targetY);
+      }, 400);
+
+      // Highlight the card
+      setHighlightedId(id);
+      // Remove glow after 3 seconds
+      setTimeout(() => setHighlightedId(null), 3000);
+    };
+
+    window.addEventListener('highlight-service', handler);
+    return () => window.removeEventListener('highlight-service', handler);
+  }, [canvasX, canvasY]);
+
   return (
-    <section className="relative w-full bg-brand-void py-24 z-20">
+    <section id="services" className="relative w-full bg-brand-void py-24 z-20">
       <div className="max-w-screen-2xl mx-auto px-8 md:px-16">
 
-        {/* Section header */}
-        <div className="flex items-baseline justify-between mb-10">
-          <h2 className="text-3xl md:text-5xl font-heading text-brand-slate tracking-widest uppercase">
-            CORE SERVICES
+        {/* SERVICES heading centered, What we do on the left */}
+        <div className="relative flex items-center justify-center mb-16">
+          <p className="absolute left-0 font-sans text-[11px] font-semibold tracking-[0.35em] text-white/25 uppercase">
+            What we do
+          </p>
+          <h2 className="text-6xl md:text-8xl font-heading font-black uppercase tracking-tighter text-white leading-none">
+            Services
           </h2>
-          <span className="hidden md:block font-mono text-[11px] tracking-[0.3em] text-white/20 uppercase">
-            PROTOCOL MATRIX / 07
-          </span>
         </div>
+
+        {/* Section sub-header */}
+        <div className="flex items-baseline justify-between mb-10">
+          <h3 className="text-3xl md:text-5xl font-heading text-brand-slate tracking-widest uppercase">
+            CORE
+          </h3>
+        </div>
+
 
         {/* ── 16:9 Aperture ── */}
         <div
@@ -327,12 +332,13 @@ export default function CoreServices({ onOrderClick }: CoreServicesProps) {
             </svg>
 
             {/* Cards */}
-            {SERVICES.map((svc, idx) => (
+            {SERVICES.filter(s => s.section === 'core').map((svc, idx) => (
               <ServiceCard
                 key={svc.id}
                 service={svc}
                 placement={CARD_PLACEMENTS[idx]}
                 onOrderClick={onOrderClick}
+                highlighted={highlightedId === svc.id}
               />
             ))}
           </motion.div>

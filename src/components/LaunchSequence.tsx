@@ -27,7 +27,7 @@ export default function LaunchSequence() {
     <AnimatePresence>
       {isPlaying && (
         <motion.div
-          className="fixed inset-0 w-full h-full z-[100] bg-brand-void pointer-events-none"
+          className="fixed inset-0 w-full h-full z-[100] bg-brand-void pointer-events-auto"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.5, ease: [0.25, 0.1, 0.25, 1] }} // Smoother custom cubic-bezier

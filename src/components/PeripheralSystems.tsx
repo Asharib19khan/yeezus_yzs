@@ -62,12 +62,13 @@ function FourPointStar({ className }: { className?: string }) {
 // muted description, thin border — adapted to dark brutalist palette.
 interface OrbitalCardProps {
   sys: (typeof PERIPHERALS)[number];
-  orbitAngleDeg: number; // live rotating angle in degrees
+  orbitAngleDeg: number;
   radius: number;
   onOrderClick: () => void;
+  highlighted?: boolean;
 }
 
-function OrbitalCard({ sys, orbitAngleDeg, radius, onOrderClick }: OrbitalCardProps) {
+function OrbitalCard({ sys, orbitAngleDeg, radius, onOrderClick, highlighted }: OrbitalCardProps) {
   // Convert to radians and offset by -90° so card A starts at the top
   const angleRad = ((orbitAngleDeg - 90) * Math.PI) / 180;
   const x = Math.cos(angleRad) * radius;
@@ -100,12 +101,16 @@ function OrbitalCard({ sys, orbitAngleDeg, radius, onOrderClick }: OrbitalCardPr
         className="
           group w-[260px] flex flex-col overflow-hidden cursor-default
           bg-[#111111]/90 backdrop-blur-xl
-          border border-white/[0.08]
           rounded-[20px]
-          shadow-[0_24px_60px_rgba(0,0,0,0.7),0_0_0_0.5px_rgba(255,255,255,0.04)]
           transition-all duration-500
           hover:border-white/[0.18] hover:shadow-[0_32px_80px_rgba(0,0,0,0.85),0_0_0_0.5px_rgba(255,255,255,0.1)]
         "
+        style={{
+          border: highlighted ? '1.5px solid rgba(255,0,136,0.7)' : '1px solid rgba(255,255,255,0.08)',
+          boxShadow: highlighted
+            ? '0 0 40px 8px rgba(255,0,136,0.3), 0 0 80px 20px rgba(255,0,136,0.12), 0 24px 60px rgba(0,0,0,0.7)'
+            : '0 24px 60px rgba(0,0,0,0.7),0 0 0 0.5px rgba(255,255,255,0.04)',
+        }}
       >
         {/*
           ── HEADER GRADIENT BLOCK ───────────────────────────────────────────
@@ -279,6 +284,8 @@ export default function PeripheralSystems({ onOrderClick }: PeripheralSystemsPro
   const rotationRef = useRef(0);
   const [rotateDeg, setRotateDeg] = useState(0);
   const isPaused = useRef(false);
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   // Responsive radius calculation
   useEffect(() => {
@@ -291,6 +298,35 @@ export default function PeripheralSystems({ onOrderClick }: PeripheralSystemsPro
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Listen for search highlight events
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { id, section } = (e as CustomEvent).detail;
+      if (section !== 'peripheral') return;
+
+      // Map service id (8-12) to PERIPHERALS id (A-E)
+      const idMap: Record<number, string> = { 8: 'A', 9: 'B', 10: 'C', 11: 'D', 12: 'E' };
+      const sysId = idMap[id as number];
+      if (!sysId) return;
+
+      // Scroll to this section
+      if (sectionRef.current) sectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Highlight the card
+      setHighlightedId(sysId);
+      // Pause orbit so user can see the highlighted card
+      isPaused.current = true;
+      // Remove glow after 3s and resume orbit
+      setTimeout(() => {
+        setHighlightedId(null);
+        isPaused.current = false;
+      }, 3000);
+    };
+
+    window.addEventListener('highlight-service', handler);
+    return () => window.removeEventListener('highlight-service', handler);
   }, []);
 
   // Smooth continuous rotation — 1 full revolution per 60 seconds
@@ -308,10 +344,11 @@ export default function PeripheralSystems({ onOrderClick }: PeripheralSystemsPro
 
   return (
     <section
+      ref={sectionRef}
       className="relative w-full bg-brand-void border-t border-white/5 overflow-hidden z-20"
       style={{ minHeight: '100vh' }}
       onMouseEnter={() => { isPaused.current = true; }}
-      onMouseLeave={() => { isPaused.current = false; }}
+      onMouseLeave={() => { if (!highlightedId) isPaused.current = false; }}
     >
       {/* ── Shader Background ─────────────────────────────────────────── */}
       <div className="absolute inset-0 z-0 opacity-80">
@@ -391,6 +428,7 @@ export default function PeripheralSystems({ onOrderClick }: PeripheralSystemsPro
               orbitAngleDeg={liveAngle}
               radius={radius}
               onOrderClick={onOrderClick}
+              highlighted={highlightedId === sys.id}
             />
           );
         })}
