@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  'https://pbtecrhhpkfdisudgmtz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidGVjcmhocGtmZGlzdWRnbXR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMzNjMsImV4cCI6MjA5MjcxOTM2M30.2ybnDwXCUF6iiuyftzWEY6gAfW51zzVBtJbmFIFhD6U'
 );
 
 export default function EmailGate({ onClose }: { onClose?: () => void }) {
