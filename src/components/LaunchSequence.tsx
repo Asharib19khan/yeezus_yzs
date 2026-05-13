@@ -38,7 +38,7 @@ export default function LaunchSequence() {
             autoPlay
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
             disablePictureInPicture
             controls={false}
             className="w-full h-full object-cover pointer-events-none"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 
 const FRAME_COUNT = 80;
@@ -9,7 +9,6 @@ const DIR_PATH = '/yeezus_intro2/';
 export default function ScrollytellingSequence() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [images, setImages] = useState<HTMLImageElement[]>([]);
   const imagesRef = useRef<HTMLImageElement[]>([]);
 
   // Framer Motion scroll hooks
@@ -57,32 +56,43 @@ export default function ScrollytellingSequence() {
     }
   };
 
-  // Preload Images
+  // Preload Images — batched so first 10 frames are prioritised
   useEffect(() => {
-    let loadedCount = 0;
-    const loadedImages: HTMLImageElement[] = [];
+    const totalFrames = FRAME_COUNT;
+    const PRIORITY_COUNT = 10; // Load these first so canvas draws immediately
+    const loadedImages: HTMLImageElement[] = new Array(totalFrames);
+    imagesRef.current = loadedImages;
 
-    for (let i = 0; i < FRAME_COUNT; i++) {
+    const loadFrame = (i: number) => {
       const img = new Image();
       const paddedIndex = i.toString().padStart(3, '0');
       img.src = `${DIR_PATH}Walk_to_center_202604251228_${paddedIndex}.jpg`;
-      
       img.onload = () => {
-        loadedCount++;
-        // Immediately draw the first frame when it loads so there's zero delay
+        loadedImages[i] = img;
+        imagesRef.current[i] = img;
+        // Draw first frame as soon as it's ready
         if (i === 0 && frameIndex.get() === 0) {
           drawFrame(0);
         }
       };
-      
-      img.onerror = () => {
-        loadedCount++;
-      };
-      
-      loadedImages.push(img);
+      img.onerror = () => { /* silently skip missing frames */ };
+      return img;
+    };
+
+    // Phase 1: Load first 10 frames immediately (high priority — fills canvas fast)
+    for (let i = 0; i < PRIORITY_COUNT && i < totalFrames; i++) {
+      loadFrame(i);
     }
-    imagesRef.current = loadedImages;
-    setImages(loadedImages);
+
+    // Phase 2: Load remaining frames quietly in the background after a short delay
+    const bgTimer = setTimeout(() => {
+      for (let i = PRIORITY_COUNT; i < totalFrames; i++) {
+        // Small stagger per frame so we don't flood the network queue all at once
+        setTimeout(() => loadFrame(i), (i - PRIORITY_COUNT) * 30);
+      }
+    }, 500); // Wait 500ms so priority frames get a head start
+
+    return () => clearTimeout(bgTimer);
   }, []);
 
   // Scrub through the sequence
