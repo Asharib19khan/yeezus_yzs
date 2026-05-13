@@ -89,7 +89,7 @@ export default function TopMusicBar({ isVisible = true }: { isVisible?: boolean 
       className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex justify-center items-start"
     >
       {/* Hidden Audio Player */}
-      <audio ref={audioRef} src={currentTrack.src} preload="auto" loop={false} />
+      <audio ref={audioRef} src={currentTrack.src} preload="none" loop={false} />
       {/* 
         We use a slightly larger invisible hover zone so the mouse doesn't 
         accidentally leave the component while it's animating/expanding 
