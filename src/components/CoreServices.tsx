@@ -8,7 +8,6 @@ import {
   useTransform,
   MotionValue,
 } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import LeatherGasShader from './LeatherGasShader';
 
 // ─────────────────────────────────────────────
@@ -43,6 +42,7 @@ const CARD_PLACEMENTS: { x: number; y: number }[] = [
 // PROPS
 // ─────────────────────────────────────────────
 interface CoreServicesProps {
+  onOrderClick: () => void;
 }
 
 
@@ -53,13 +53,14 @@ interface CoreServicesProps {
 function ServiceCard({
   service,
   placement,
+  onOrderClick,
   highlighted,
 }: {
   service: (typeof SERVICES)[0];
   placement: { x: number; y: number };
+  onOrderClick: () => void;
   highlighted?: boolean;
 }) {
-  const router = useRouter();
   // Discriminate click vs drag: if pointer moves > threshold before
   // pointerup it counts as a drag and the click is suppressed.
   const DRAG_THRESHOLD = 5;
@@ -85,9 +86,9 @@ function ServiceCard({
         e.stopPropagation();
         return;
       }
-      router.push('/book');
+      onOrderClick();
     },
-    [router]
+    [onOrderClick]
   );
 
   return (
@@ -166,7 +167,7 @@ function ServiceCard({
                        hover:bg-white hover:text-brand-void hover:border-white
                        transition-all duration-300 cursor-pointer rounded-full"
           >
-            Get started
+            Place your order
           </button>
         </div>
 
@@ -180,7 +181,7 @@ function ServiceCard({
 // ─────────────────────────────────────────────
 // MAIN EXPORT
 // ─────────────────────────────────────────────
-export default function CoreServices({}: CoreServicesProps) {
+export default function CoreServices({ onOrderClick }: CoreServicesProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
@@ -336,6 +337,7 @@ export default function CoreServices({}: CoreServicesProps) {
                 key={svc.id}
                 service={svc}
                 placement={CARD_PLACEMENTS[idx]}
+                onOrderClick={onOrderClick}
                 highlighted={highlightedId === svc.id}
               />
             ))}

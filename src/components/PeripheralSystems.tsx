@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, useAnimationFrame } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import LeatherGasShader from './LeatherGasShader';
 
 // ─── Data ──────────────────────────────────────────────────────────────────────
@@ -65,11 +64,11 @@ interface OrbitalCardProps {
   sys: (typeof PERIPHERALS)[number];
   orbitAngleDeg: number;
   radius: number;
+  onOrderClick: () => void;
   highlighted?: boolean;
 }
 
-function OrbitalCard({ sys, orbitAngleDeg, radius, highlighted }: OrbitalCardProps) {
-  const router = useRouter();
+function OrbitalCard({ sys, orbitAngleDeg, radius, onOrderClick, highlighted }: OrbitalCardProps) {
   // Convert to radians and offset by -90° so card A starts at the top
   const angleRad = ((orbitAngleDeg - 90) * Math.PI) / 180;
   const x = Math.cos(angleRad) * radius;
@@ -189,7 +188,7 @@ function OrbitalCard({ sys, orbitAngleDeg, radius, highlighted }: OrbitalCardPro
           <button
             onClick={(e) => {
               e.stopPropagation();
-              router.push('/book');
+              onOrderClick();
             }}
             className="
               mt-4 w-full py-2.5
@@ -202,7 +201,7 @@ function OrbitalCard({ sys, orbitAngleDeg, radius, highlighted }: OrbitalCardPro
               group-hover:border-white/[0.2] group-hover:text-white/70
             "
           >
-            [ GET IN TOUCH ]
+            [ PLACE YOUR ORDER ]
           </button>
         </div>
       </div>
@@ -276,9 +275,10 @@ function TetherLines({ radius, angleDeg }: { radius: number; angleDeg: number })
 
 // ─── Main Section ─────────────────────────────────────────────────────────────
 interface PeripheralSystemsProps {
+  onOrderClick: () => void;
 }
 
-export default function PeripheralSystems({}: PeripheralSystemsProps) {
+export default function PeripheralSystems({ onOrderClick }: PeripheralSystemsProps) {
   const [mounted, setMounted] = useState(false);
   const [radius, setRadius] = useState(380);
   const rotationRef = useRef(0);
@@ -427,6 +427,7 @@ export default function PeripheralSystems({}: PeripheralSystemsProps) {
               sys={sys}
               orbitAngleDeg={liveAngle}
               radius={radius}
+              onOrderClick={onOrderClick}
               highlighted={highlightedId === sys.id}
             />
           );

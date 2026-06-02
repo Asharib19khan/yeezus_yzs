@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 
 export default function Navigation({ isVisible = true }: { isVisible?: boolean }) {
   const scrollToTop = () => {
@@ -11,6 +10,10 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
   const scrollToServices = () => {
     const el = document.getElementById('services');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const openBookMeeting = () => {
+    window.dispatchEvent(new CustomEvent('open-book-meeting'));
   };
 
   if (!isVisible) return null;
@@ -50,8 +53,8 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
             Services
           </button>
 
-          <Link
-            href="/book"
+          <button
+            onClick={openBookMeeting}
             className="
               px-5 py-2.5 rounded-full
               text-[13px] font-sans font-medium tracking-[0.02em]
@@ -61,8 +64,8 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
               focus:outline-none
             "
           >
-            Book a call
-          </Link>
+            Book a Meeting
+          </button>
         </div>
       </div>
     </motion.nav>
