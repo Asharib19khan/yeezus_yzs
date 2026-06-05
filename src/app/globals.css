@@ -57,6 +57,38 @@
   .text-shadow-lg {
     text-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
   }
+
+  .text-gradient-hotblue {
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    background-image:
+      radial-gradient(circle at 24% 18%, rgba(255, 0, 136, 0.95) 0 12%, transparent 30%),
+      radial-gradient(circle at 78% 70%, rgba(30, 144, 255, 0.95) 0 14%, transparent 34%),
+      linear-gradient(105deg, #ffffff 0%, #ff4fbd 34%, #39a7ff 68%, #ffffff 100%);
+    background-size: 220% 220%, 220% 220%, 260% 260%;
+    background-position: 0% 22%, 100% 78%, 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: drop-shadow(0 0 18px rgba(255, 0, 136, 0.1)) drop-shadow(0 0 24px rgba(57, 167, 255, 0.08));
+    animation: hotblue-texture 5.5s linear infinite;
+  }
+
+  .text-gradient-hotblue-muted {
+    opacity: 0.62;
+    filter: drop-shadow(0 0 14px rgba(57, 167, 255, 0.08));
+  }
+}
+
+@keyframes hotblue-texture {
+  0% {
+    background-position: 0% 22%, 100% 78%, 0% 50%;
+  }
+  50% {
+    background-position: 70% 42%, 30% 58%, 100% 50%;
+  }
+  100% {
+    background-position: 140% 22%, -40% 78%, 200% 50%;
+  }
 }
 
 /* CPU Architecture animations */
