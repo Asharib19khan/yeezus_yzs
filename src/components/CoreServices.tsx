@@ -96,6 +96,64 @@ const SERVICE_LIST_GROUPS: {
   }[];
 }[] = [
   {
+    title: 'Product & AI',
+    items: [
+      {
+        title: 'Product Design',
+        desc: 'UX/UI for apps, websites, and platforms designed for conversion and retention.',
+        Icon: FaLaptop,
+        glow: 'from-amber-300/16 via-white/5 to-transparent',
+      },
+      {
+        title: 'Web Development',
+        desc: 'Marketing sites, landing pages, and web apps built for speed and conversion.',
+        Icon: FaCode,
+        glow: 'from-violet-400/18 via-white/5 to-transparent',
+      },
+      {
+        title: 'App Development',
+        desc: 'iOS, Android, and cross-platform apps from concept through App Store launch.',
+        Icon: FaMobileAlt,
+        glow: 'from-orange-400/16 via-white/5 to-transparent',
+      },
+      {
+        title: 'AI Consulting',
+        desc: 'Workflow audits, opportunity mapping, and a prioritized AI adoption roadmap.',
+        Icon: FaRobot,
+        glow: 'from-violet-500/22 via-white/5 to-transparent',
+      },
+      {
+        title: 'Custom AI Products',
+        desc: 'Internal copilots, automation pipelines, and custom AI tools for your team.',
+        Icon: FaMicrochip,
+        glow: 'from-purple-500/22 via-white/5 to-transparent',
+      },
+    ],
+  },
+  {
+    title: 'Data & Intelligence',
+    items: [
+      {
+        title: 'Data Analytics',
+        desc: 'Custom dashboards, BI integrations, and reporting you can act on.',
+        Icon: FaChartPie,
+        glow: 'from-fuchsia-400/16 via-white/5 to-transparent',
+      },
+      {
+        title: 'Data Attribution',
+        desc: 'Multi-touch attribution and conversion tracking across every channel and platform.',
+        Icon: FaProjectDiagram,
+        glow: 'from-lime-400/18 via-white/5 to-transparent',
+      },
+      {
+        title: 'CRO & Testing',
+        desc: 'A/B testing, funnel optimization, and conversion lifts from click to close.',
+        Icon: FaFilter,
+        glow: 'from-blue-500/20 via-white/5 to-transparent',
+      },
+    ],
+  },
+  {
     title: 'Growth',
     items: [
       {
@@ -180,64 +238,6 @@ const SERVICE_LIST_GROUPS: {
         desc: 'Blog posts, whitepapers, and thought leadership for growth.',
         Icon: FaPenNib,
         glow: 'from-emerald-300/16 via-white/5 to-transparent',
-      },
-    ],
-  },
-  {
-    title: 'Product & AI',
-    items: [
-      {
-        title: 'Product Design',
-        desc: 'UX/UI for apps, websites, and platforms designed for conversion and retention.',
-        Icon: FaLaptop,
-        glow: 'from-amber-300/16 via-white/5 to-transparent',
-      },
-      {
-        title: 'Web Development',
-        desc: 'Marketing sites, landing pages, and web apps built for speed and conversion.',
-        Icon: FaCode,
-        glow: 'from-violet-400/18 via-white/5 to-transparent',
-      },
-      {
-        title: 'App Development',
-        desc: 'iOS, Android, and cross-platform apps from concept through App Store launch.',
-        Icon: FaMobileAlt,
-        glow: 'from-orange-400/16 via-white/5 to-transparent',
-      },
-      {
-        title: 'AI Consulting',
-        desc: 'Workflow audits, opportunity mapping, and a prioritized AI adoption roadmap.',
-        Icon: FaRobot,
-        glow: 'from-violet-500/22 via-white/5 to-transparent',
-      },
-      {
-        title: 'Custom AI Products',
-        desc: 'Internal copilots, automation pipelines, and custom AI tools for your team.',
-        Icon: FaMicrochip,
-        glow: 'from-purple-500/22 via-white/5 to-transparent',
-      },
-    ],
-  },
-  {
-    title: 'Data & Intelligence',
-    items: [
-      {
-        title: 'Data Analytics',
-        desc: 'Custom dashboards, BI integrations, and reporting you can act on.',
-        Icon: FaChartPie,
-        glow: 'from-fuchsia-400/16 via-white/5 to-transparent',
-      },
-      {
-        title: 'Data Attribution',
-        desc: 'Multi-touch attribution and conversion tracking across every channel and platform.',
-        Icon: FaProjectDiagram,
-        glow: 'from-lime-400/18 via-white/5 to-transparent',
-      },
-      {
-        title: 'CRO & Testing',
-        desc: 'A/B testing, funnel optimization, and conversion lifts from click to close.',
-        Icon: FaFilter,
-        glow: 'from-blue-500/20 via-white/5 to-transparent',
       },
     ],
   },

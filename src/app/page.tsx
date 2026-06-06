@@ -6,7 +6,7 @@ import Hero from '@/components/Hero';
 import ImmersiveProof from '@/components/ImmersiveProof';
 import CoreServices from '@/components/CoreServices';
 import FinalConversion from '@/components/FinalConversion';
-import CaseStudies from '@/components/CaseStudies';
+import AboutUs from '@/components/AboutUs';
 import Footer from '@/components/Footer';
 import TopMusicBar from '@/components/TopMusicBar';
 import EmailGate from '@/components/EmailGate';
@@ -54,7 +54,7 @@ export default function Home() {
         <ImmersiveProof />
         <CoreServices />
         <FinalConversion />
-        <CaseStudies />
+        <AboutUs />
         <Footer />
       </div>
 
