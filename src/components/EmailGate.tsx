@@ -2,17 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  'https://pbtecrhhpkfdisudgmtz.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidGVjcmhocGtmZGlzdWRnbXR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMzNjMsImV4cCI6MjA5MjcxOTM2M30.2ybnDwXCUF6iiuyftzWEY6gAfW51zzVBtJbmFIFhD6U'
-);
 
 export default function EmailGate({ onClose }: { onClose?: () => void }) {
   const [isVisible, setIsVisible] = useState(true);
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
     if (isVisible) {
@@ -28,25 +21,24 @@ export default function EmailGate({ onClose }: { onClose?: () => void }) {
     };
   }, [isVisible]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim() || isSubmitting) return;
-    setIsSubmitting(true);
+  useEffect(() => {
+    // Show "HELLO," initially (step 0).
+    // After 1.5s, show "YOU." (step 1).
+    const timer1 = setTimeout(() => {
+      setStep(1);
+    }, 1500);
 
-    const { error } = await supabase
-      .from('logins')
-      .insert({ email: email.trim() });
-
-    if (error) {
-      console.error('Supabase insert error:', error.message);
-    }
-
-    // Always proceed to site regardless of DB outcome
-    setTimeout(() => {
+    // After 3.5s total, hide the gate and proceed.
+    const timer2 = setTimeout(() => {
       setIsVisible(false);
       if (onClose) setTimeout(onClose, 800);
-    }, 400);
-  };
+    }, 3500);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, [onClose]);
 
   return (
     <AnimatePresence>
@@ -68,71 +60,47 @@ export default function EmailGate({ onClose }: { onClose?: () => void }) {
           `}} />
           
           <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, filter: 'blur(10px)' }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed -inset-10 z-[90] flex items-center justify-center bg-black/60"
-          style={{
-            backdropFilter: 'blur(32px)',
-            WebkitBackdropFilter: 'blur(32px)',
-          }}
-        >
-          <motion.div 
-            initial={{ opacity: 0, y: 30, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-md px-8 flex flex-col items-center text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, filter: 'blur(10px)' }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed -inset-10 z-[90] flex items-center justify-center bg-black/60"
+            style={{
+              backdropFilter: 'blur(32px)',
+              WebkitBackdropFilter: 'blur(32px)',
+            }}
           >
-            <div className="flex flex-col items-start self-start mb-8">
-              <span className="text-sm font-light uppercase tracking-[0.4em] text-white/50 mb-1">
-                Greetings,
-              </span>
-              <span className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none">
-                YOU.
-              </span>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="w-full flex flex-col items-center gap-6">
-              <div className="w-full relative group">
-                {/* Glow effect behind input */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-white/10 to-white/5 rounded-full blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+            <motion.div 
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-md px-8 flex flex-col items-center text-center"
+            >
+              <div className="flex flex-col items-center justify-center">
+                <motion.span 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1 }}
+                  className="text-sm font-light uppercase tracking-[0.4em] text-white/50 mb-2"
+                >
+                  HELLO,
+                </motion.span>
                 
-                <input
-                  type="email"
-                  required
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="relative w-full bg-black/50 border border-white/20 rounded-full py-4 px-6 text-center text-white placeholder:text-white/30 outline-none focus:border-white/60 transition-colors duration-300 font-sans text-lg shadow-2xl"
-                />
+                <AnimatePresence>
+                  {step >= 1 && (
+                    <motion.span 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                      className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none"
+                    >
+                      YOU.
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </div>
-
-              <p className="text-[11px] font-mono tracking-widest text-white/40 uppercase">
-                For our records only. <br/>We do not send spam or newsletters.
-              </p>
-
-              <button
-                type="submit"
-                disabled={isSubmitting || !email.trim()}
-                className="group relative overflow-hidden rounded-full px-12 py-4 bg-white text-black font-bold uppercase tracking-widest text-sm transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
-              >
-                {/* Button Shine Effect */}
-                <motion.div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background: 'linear-gradient(105deg, transparent 20%, rgba(0,0,0,0.1) 50%, transparent 80%)',
-                  }}
-                  animate={isSubmitting ? { x: ['-100%', '200%'] } : { x: '-100%' }}
-                  transition={{ duration: 1, repeat: isSubmitting ? Infinity : 0 }}
-                />
-                <span className="relative z-10">
-                  {isSubmitting ? 'VERIFYING...' : 'YEEZUS'}
-                </span>
-              </button>
-            </form>
-          </motion.div>
+            </motion.div>
           </motion.div>
         </>
       )}

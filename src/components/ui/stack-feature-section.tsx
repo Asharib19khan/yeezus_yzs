@@ -68,8 +68,8 @@ export default function FeatureSection() {
                   .slice(orbitIdx * iconsPerOrbit, orbitIdx * iconsPerOrbit + iconsPerOrbit)
                   .map((cfg, iconIdx) => {
                     const angle = iconIdx * angleStep;
-                    const x = 50 + 50 * Math.cos(angle);
-                    const y = 50 + 50 * Math.sin(angle);
+                    const x = (50 + 50 * Math.cos(angle)).toFixed(4);
+                    const y = (50 + 50 * Math.sin(angle)).toFixed(4);
 
                     return (
                       <div

@@ -398,26 +398,28 @@ const Hero: React.FC<HeroProps> = ({
       />
       
       {/* Hero Content Overlay */}
-      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white">
-        {/* Trust Badge */}
-        {trustBadge && (
-          <div className="mb-8 animate-fade-in-down">
-            <div className="flex items-center gap-2 px-6 py-3 bg-orange-500/10 backdrop-blur-md border border-orange-300/30 rounded-full text-sm">
-              {trustBadge.icons && (
-                <div className="flex">
-                  {trustBadge.icons.map((icon, index) => (
-                    <span key={index} className={`text-${index === 0 ? 'yellow' : index === 1 ? 'orange' : 'amber'}-300`}>
-                      {icon}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <span className="text-orange-100">{trustBadge.text}</span>
+      <div className="absolute inset-0 z-10 flex flex-col lg:flex-row items-center justify-between text-white max-w-[100rem] mx-auto px-6 lg:px-16 xl:px-24 w-full">
+        
+        {/* Left Content Area */}
+        <div className="text-left space-y-6 max-w-2xl xl:max-w-3xl flex-1 pt-20 lg:pt-0">
+          {/* Trust Badge */}
+          {trustBadge && (
+            <div className="mb-8 animate-fade-in-down inline-block">
+              <div className="flex items-center gap-2 px-6 py-3 bg-orange-500/10 backdrop-blur-md border border-orange-300/30 rounded-full text-sm">
+                {trustBadge.icons && (
+                  <div className="flex">
+                    {trustBadge.icons.map((icon, index) => (
+                      <span key={index} className={`text-${index === 0 ? 'yellow' : index === 1 ? 'orange' : 'amber'}-300`}>
+                        {icon}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <span className="text-orange-100">{trustBadge.text}</span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="text-center space-y-6 max-w-5xl mx-auto px-4">
           {/* Main Heading with Animation */}
           <div className="space-y-2">
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-orange-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent animate-fade-in-up animation-delay-200">
@@ -429,15 +431,15 @@ const Hero: React.FC<HeroProps> = ({
           </div>
           
           {/* Subtitle with Animation */}
-          <div className="max-w-3xl mx-auto animate-fade-in-up animation-delay-600">
-            <p className="text-lg md:text-xl lg:text-2xl text-orange-100/90 font-light leading-relaxed">
+          <div className="animate-fade-in-up animation-delay-600">
+            <p className="text-lg md:text-xl lg:text-2xl text-orange-100/90 font-light leading-relaxed max-w-2xl">
               {subtitle}
             </p>
           </div>
           
           {/* CTA Buttons with Animation */}
           {buttons && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10 animate-fade-in-up animation-delay-800">
+            <div className="flex flex-col sm:flex-row gap-4 justify-start mt-10 animate-fade-in-up animation-delay-800">
               {buttons.primary && (
                 <button 
                   onClick={buttons.primary.onClick}
@@ -456,13 +458,14 @@ const Hero: React.FC<HeroProps> = ({
               )}
             </div>
           )}
-
-          {children && (
-            <div className="mt-8 flex justify-center animate-fade-in-up animation-delay-800">
-              {children}
-            </div>
-          )}
         </div>
+
+        {/* Right Content Area for Children (Artifact) */}
+        {children && (
+          <div className="flex-1 flex justify-center lg:justify-end mt-12 lg:mt-0 animate-fade-in-up animation-delay-800 w-full lg:w-auto">
+            {children}
+          </div>
+        )}
       </div>
     </div>
   );
